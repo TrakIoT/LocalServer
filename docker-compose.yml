@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  local-server-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: local-server-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGO_USERNAME=$MONGO_USERNAME
+      - MONGO_PASSWORD=$MONGO_PASSWORD
+      - MONGO_HOSTNAME=local-server-db
+      - MONGO_PORT=$MONGO_PORT
+      - MONGO_DB=$MONGO_DB
+    ports:
+      - "3001:8080"
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    networks:
+      - local-server-network
+    command: ./wait-for.sh local-server-db:27017 -- /home/node/app/node_modules/.bin/nodemon /home/node/app/src/app.js
+  local-server-db:
+    image: mongo:latest
+    container_name: local-server-db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - local-server-network
+        
+networks:
+  local-server-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  node_modules:
