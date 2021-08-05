@@ -4,11 +4,11 @@ const { uploadRegisterService } = require('../services/upload.service');
 const uploadReadingsController = async () => {
   await ReadingSchema.find({upload: false}).exec(function (err, registers) {
     if (err) {
-      return response.status(500).send(err);
+      console.log("ERROR: ", err);
+      return;
     }
 
     registers.forEach(async (register) => {
-      console.log(register.register_id);
       const uploadRegister = {
         register_id: register.register_id,
         register_type: register.register_type,
@@ -21,10 +21,11 @@ const uploadReadingsController = async () => {
         expiring_date: register.expiring_date
       };
 
-
       const sended = await uploadRegisterService(uploadRegister);
-      console.log("SENDED: ", uploadRegister.register_id);
-      await updateReadingController(uploadRegister.register_id, {upload: true});
+      console.log("SENDED: ", register.register_id);
+      if(sended){
+        await updateReadingController(register.register_id, {upload: true});
+      }
     });
   });
 }
