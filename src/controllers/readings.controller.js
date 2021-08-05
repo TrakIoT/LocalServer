@@ -2,6 +2,7 @@ const { ReadingSchema } = require('../models/readings.model');
 
 const readingPostController = (request, response, next) => {
   const reading = request.body;
+  console.log("Receiving POST", reading);
   
   const newReading = new ReadingSchema(reading);
 

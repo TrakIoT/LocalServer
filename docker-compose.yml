@@ -8,6 +8,7 @@ services:
     container_name: local-server-api
     restart: unless-stopped
     env_file: .env
+    user: root
     environment:
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
@@ -19,8 +20,6 @@ services:
     volumes:
       - .:/home/node/app
       - node_modules:/home/node/app/node_modules
-    networks:
-      - local-server-network
     command: ./wait-for.sh local-server-db:27017 -- /home/node/app/node_modules/.bin/nodemon /home/node/app/src/app.js
   local-server-db:
     image: mongo:latest
@@ -32,13 +31,10 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
     volumes:
       - dbdata:/data/db
-    networks:
-      - local-server-network
-        
-networks:
-  local-server-network:
-    driver: bridge
-
+networks: 
+  default: 
+    external: 
+      name: trakiot
 volumes:
   dbdata:
   node_modules:
