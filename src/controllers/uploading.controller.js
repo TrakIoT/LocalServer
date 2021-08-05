@@ -1,6 +1,5 @@
 const { ReadingSchema } = require('../models/readings.model');
 const { uploadRegisterService } = require('../services/upload.service');
-const send = true;
 
 const uploadReadingsController = async () => {
   await ReadingSchema.find({upload: false}).exec(function (err, registers) {
@@ -22,13 +21,10 @@ const uploadReadingsController = async () => {
         expiring_date: register.expiring_date
       };
 
-      if(send){
-        const sended = await uploadRegisterService(uploadRegister);
-        console.log("SENDED: ", send);
-        if(sended){
-          await updateReadingController(uploadRegister.register_id, {upload: true});
-        }
-      }
+
+      const sended = await uploadRegisterService(uploadRegister);
+      console.log("SENDED: ", uploadRegister.register_id);
+      await updateReadingController(uploadRegister.register_id, {upload: true});
     });
   });
 }

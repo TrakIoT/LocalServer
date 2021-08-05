@@ -26,6 +26,5 @@ app.listen(port, function () {
 })
 
 new CronJob("*/5 * * * * *", async () => {
-  console.log("Running Cron");
   await uploadReadingsController();
 }).start();
